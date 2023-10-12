@@ -1,19 +1,26 @@
-// @ts-check
 const { test, expect } = require("@playwright/test");
+const { DuckDuckGoHomePage } = require("../pages/DuckDuckGoHomePage");
+const { PandaPage } = require("../pages/PanadaPage");
 
 test("Site loads successfully", async ({ page }) => {
-	await page.goto("https://www.duckduckgo.com");
+	const duckDuckGoHomePage = new DuckDuckGoHomePage(page);
+	await duckDuckGoHomePage.goto();
 
 	// Expect the page to contain the DuckDuckGo logo.
-	await expect(page.locator("//*[@id='__next']/main/article/div[1]/div[1]/section[1]/img")).toBeVisible();
+	await expect(duckDuckGoHomePage.duckDuckGoLogo).toBeVisible();
 });
 
 test("Perform search", async ({ page }) => {
-	await page.goto("https://www.duckduckgo.com");
+	const duckDuckGoHomePage = new DuckDuckGoHomePage(page);
+	const pandaPage = new PandaPage(page);
+
+	await duckDuckGoHomePage.goto();
 
 	// Fill our panda in search bar
-	await page.locator("#searchbox_input").fill("panda");
+	await duckDuckGoHomePage.searchInputBox.fill("panda");
 
 	// Click search button
-	await page.click("#searchbox_homepage > div > div > button");
+	await duckDuckGoHomePage.searchSubmitButton.click();
+
+	await expect(pandaPage.pandaTextSearchResult).toBeVisible();
 });
